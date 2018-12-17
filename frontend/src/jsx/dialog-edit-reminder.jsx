@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
 import {Button, Dialog, DialogActions, DialogContent, IconButton, InputAdornment, TextField} from '@material-ui/core';
@@ -23,6 +24,7 @@ class DialogEditReminder extends Component {
 
     constructor(props) {
         super(props);
+        this.form = React.createRef();
         this.state = {
             startDate: props.item.start_date || null
         };
@@ -37,7 +39,11 @@ class DialogEditReminder extends Component {
     };
 
     save = () => {
-        this.props.onClose();
+        const data = new FormData(ReactDOM.findDOMNode(this.form.current));
+        fetch('//api.dashboard.docksal/reminder/save', {
+            method: 'POST',
+            body: data
+        });
     };
 
     deleteException = () => {
@@ -52,7 +58,9 @@ class DialogEditReminder extends Component {
 
         let btnDeleteException = null;
         if (item.parent && item.id > 0 && item.status !== 'past due') {
-            btnDeleteException = <Button className={classes.dialogActionLeft} onClick={this.deleteException} color="secondary">Delete Exception</Button>;
+            btnDeleteException =
+                <Button className={classes.dialogActionLeft} onClick={this.deleteException} color="secondary">Delete
+                    Exception</Button>;
         }
 
         return (
@@ -63,51 +71,57 @@ class DialogEditReminder extends Component {
                     </IconButton>
                 </DialogActions>
                 <DialogContent>
-                    <TextField
-                        margin="normal"
-                        id="label"
-                        label="Label"
-                        variant="outlined"
-                        defaultValue={item.label || ''}
-                        fullWidth
-                        required
-                        autoFocus
-                    />
-                    <TextField
-                        margin="normal"
-                        id="start-date"
-                        label="Start Date"
-                        type="date"
-                        variant="outlined"
-                        className={classes.leftInput}
-                        onChange={this.changeStartDate}
-                        defaultValue={item.start_date || ''}
-                        InputLabelProps={{shrink: true}}
-                        required
-                    />
-                    <TextField
-                        margin="normal"
-                        id="end-date"
-                        label="End Date"
-                        type="date"
-                        variant="outlined"
-                        className={classes.rightInput}
-                        defaultValue={item.parent && item.id === null ? item.parent.end_date : item.end_date}
-                        inputProps={{min: startDate}}
-                        InputLabelProps={{shrink: true}}
-                    />
-                    <TextField
-                        margin="normal"
-                        id="amount"
-                        label="Amount"
-                        type="number"
-                        variant="outlined"
-                        defaultValue={numeral(item.amount).format('0.00') || ''}
-                        fullWidth
-                        required
-                        inputProps={{step: 0.01}}
-                        InputProps={{startAdornment: <InputAdornment position="start">$</InputAdornment>}}
-                    />
+                    <form ref={this.form}>
+                        <TextField
+                            margin="normal"
+                            name="label"
+                            id="label"
+                            label="Label"
+                            variant="outlined"
+                            defaultValue={item.label || ''}
+                            fullWidth
+                            required
+                            autoFocus
+                        />
+                        <TextField
+                            margin="normal"
+                            name="start_date"
+                            id="start-date"
+                            label="Start Date"
+                            type="date"
+                            variant="outlined"
+                            className={classes.leftInput}
+                            onChange={this.changeStartDate}
+                            defaultValue={item.start_date || ''}
+                            InputLabelProps={{shrink: true}}
+                            required
+                        />
+                        <TextField
+                            margin="normal"
+                            name="end_date"
+                            id="end-date"
+                            label="End Date"
+                            type="date"
+                            variant="outlined"
+                            className={classes.rightInput}
+                            defaultValue={item.parent && item.id === null ? item.parent.end_date : item.end_date}
+                            inputProps={{min: startDate}}
+                            InputLabelProps={{shrink: true}}
+                        />
+                        <TextField
+                            margin="normal"
+                            name="amount"
+                            id="amount"
+                            label="Amount"
+                            type="number"
+                            variant="outlined"
+                            defaultValue={numeral(item.amount).format('0.00') || ''}
+                            fullWidth
+                            required
+                            inputProps={{step: 0.01}}
+                            InputProps={{startAdornment: <InputAdornment position="start">$</InputAdornment>}}
+                        />
+                    </form>
                 </DialogContent>
                 <DialogActions>
                     {btnDeleteException}
