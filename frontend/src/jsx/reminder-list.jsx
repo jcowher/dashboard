@@ -17,6 +17,13 @@ import update from 'immutability-helper';
 import DialogEditReminder from "./dialog-edit-reminder";
 
 const styles = theme => ({
+    cellCheckbox: {
+        paddingRight: 0,
+        width: 20
+    },
+    checkbox: {
+        paddingRight: 0
+    },
     iconClose: {
         position: 'absolute',
         right: 0,
@@ -95,8 +102,9 @@ class ReminderList extends Component {
                 <Table className={classes.table}>
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="checkbox">
+                            <TableCell className={classes.cellCheckbox} padding="checkbox">
                                 <Checkbox
+                                    className={classes.checkbox}
                                     checked={selected.length === items.length}
                                     onChange={this.toggleAll}
                                     value="1"
@@ -120,7 +128,7 @@ class ReminderList extends Component {
                                     key={key}
                                     className={tableRowClass}
                                 >
-                                    <TableCell padding="checkbox">
+                                    <TableCell className={classes.cellCheckbox} padding="checkbox">
                                         <Checkbox
                                             checked={selected.indexOf(key) >= 0}
                                             onChange={this.toggleOne}
