@@ -1,0 +1,2 @@
+# Ignore directories that are built by Gulp
+docroot
